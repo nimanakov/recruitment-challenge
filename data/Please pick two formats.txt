@@ -1,0 +1,2 @@
+You do not have to parse all three formats. Please pick the two formats you are most comfortable with parsing and ignore the remaining one.
+Use any third-party parsers of your choosing, or write your own (writing a format parser is not supposed to be the main challenge).

@@ -22,15 +22,12 @@ public class FileReaderManagerImpl implements FileReaderManager {
     @Override
     public <T> T read(final String filePath, final Class<T> clazz) {
         final FileReader fileReader = getFileReader(filePath);
-        final InputStream inputStream;
 
-        try {
-            inputStream = Files.newInputStream(Path.of(filePath));
+        try (final InputStream inputStream = Files.newInputStream(Path.of(filePath))) {
+            return fileReader.read(inputStream, clazz);
         } catch (final IOException ex) {
             throw new ChallengeException(ex.getMessage()); // should not happen
         }
-
-        return fileReader.read(inputStream, clazz);
     }
 
     private FileReader getFileReader(final String filePath) {

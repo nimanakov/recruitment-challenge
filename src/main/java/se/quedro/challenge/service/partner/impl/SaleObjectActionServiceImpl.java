@@ -36,6 +36,9 @@ public class SaleObjectActionServiceImpl implements SaleObjectActionService {
 
     private final Set<SaleObjectConsumer> saleObjectConsumers;
 
+    // number of threads depends on how many potential consumers and parallel executions there might be
+    final ExecutorService executor = Executors.newFixedThreadPool(16);
+
     @Inject
     public SaleObjectActionServiceImpl(final SaleObjectParserService saleObjectParserService,
                                        final SaleObjectConsumerHolder saleObjectConsumerHolder) {
@@ -60,9 +63,6 @@ public class SaleObjectActionServiceImpl implements SaleObjectActionService {
             return;
         }
 
-        // number of threads depends on how many potential consumers there might be
-        final ExecutorService executor = Executors.newFixedThreadPool(16);
-
         /* for each consumer we either synchronize till sorting and reporting are finished so sale objects collection is not altered by
            other sale consumer threads or we copy all sale objects so they are reported in requested order
 
@@ -77,7 +77,7 @@ public class SaleObjectActionServiceImpl implements SaleObjectActionService {
             final List<Future<Void>> futures = executor.invokeAll(tasks, TIMEOUT_IN_SEC, TimeUnit.SECONDS);
 
             for (final Future<Void> future : futures) {
-                future.get(0, TimeUnit.MILLISECONDS); // so exception is thrown in case working thread terminated due to one
+                future.get(0, TimeUnit.MILLISECONDS); // so exception is thrown in case worker thread was terminated
             }
 
             // I assume that we must report all sale objects to all partners or not report anything at all
@@ -92,7 +92,7 @@ public class SaleObjectActionServiceImpl implements SaleObjectActionService {
             }
             throw new ChallengeException(ex.getMessage());
         } finally {
-            /* I would not shutdown executor in real app but since since it's a CLI app shutdown is required so all thread are terminated
+            /* I would not shutdown executor in real app but since it's a CLI app shutdown is required so all thread are terminated
                by the time main returns */
             executor.shutdown();
         }

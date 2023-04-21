@@ -7,7 +7,6 @@ public interface SaleObjectConsumer {
      */
     PriorityOrderAttribute getPriorityOrderAttribute();
 
-
     /**
      * Must be called BEFORE using the reportSaleObjects()-method.
      */
@@ -30,14 +29,10 @@ public interface SaleObjectConsumer {
      */
     void commitSaleObjectTransaction();
 
-
-
-
-
     enum PriorityOrderAttribute {
         CITY,
         SQUARE_METERS,
-        PRICE_PER_SQUARE_METER;
+        PRICE_PER_SQUARE_METER
     }
 
     class TechnicalException extends RuntimeException {

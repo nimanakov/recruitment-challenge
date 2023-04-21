@@ -7,10 +7,7 @@ import se.quedro.challenge.service.action.ActionHelperService;
 import se.quedro.challenge.service.partner.SaleObjectActionService;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -45,7 +42,7 @@ public class ActionHelperServiceImpl implements ActionHelperService {
         throw new ChallengeException(String.format("Unknown command %s. List of known commands: %s", command, knownCommands));
     }
 
-    private Consumer<String[]> getAction(final ActionType actionType) {
+    private Consumer<String[]> getAction(final ActionType actionType) throws ChallengeException {
         final Consumer<String[]> actionConsumer;
 
         // Can be replaced with "if statement but switch is used for exhaustion for future action types.
@@ -55,7 +52,7 @@ public class ActionHelperServiceImpl implements ActionHelperService {
                 actionConsumer = saleObjectActionService::sendToPartners;
                 break;
             default:
-                final String message = String.format("Action must be implemented for \"%s\" command. Contact your program provider",
+                final String message = String.format("Action must be implemented for \"%s\" command. Contact your application provider",
                         actionType.getCommandText());
                 throw new ChallengeException(message);
         }
